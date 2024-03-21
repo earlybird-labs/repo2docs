@@ -1,5 +1,7 @@
 # Repo2Docs: Convert GitHub Repositories to Documentation
 
+Inspired by [github2file](https://github.com/cognitivecomputations/github2file)
+
 Repo2Docs is a Python-based tool designed to convert the contents of a GitHub repository into comprehensive documentation or diagrams. This tool leverages language model APIs such as OpenAI or Anthropic to process and generate documentation, making it easier for developers to create documentation for their projects.
 
 ## How It Works
