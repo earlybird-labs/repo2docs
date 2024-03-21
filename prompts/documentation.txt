@@ -16,6 +16,8 @@ Please follow these steps:
 
 3. Use appropriate Markdown syntax for headings, lists, code blocks, and other formatting elements.
 
-4. Be detailed, accurate, and clear in your explanations. Your output will be used to assist in preparing a provisional patent application, so it should be comprehensive and professionally written.
+4. Where necessary, include diagrams to illustrate the system architecture, components, or workflows using mermaid syntax in Markdown.
 
-5. Your response will be saved as a markdown file, so ensure the formatting is correct and omit any extraneous information that does not pertain to the documentation.
+5. Be detailed, accurate, and clear in your explanations. Your output will be used to assist in preparing a provisional patent application, so it should be comprehensive and professionally written.
+
+6. Your response will be saved as a markdown file, so ensure the formatting is correct and omit any extraneous information that does not pertain to the documentation.

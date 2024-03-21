@@ -9,6 +9,8 @@ Please follow these steps:
    - User interaction flows
    - Data flow and storage
    - Integration with external services or APIs
+   - Key processes or workflows
+   - Database schema or data model
 
 3. Use a code-based diagramming syntax, such as Mermaid, to generate the diagrams. Provide the diagram code in the Markdown output.
 
