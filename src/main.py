@@ -1,3 +1,4 @@
+import os
 import logging
 
 from repo_to_text import RepoProcessor
@@ -8,9 +9,6 @@ def main(repo_zip_path: str, output_file: str, doc_type: str = "documentation", 
     repo_processor = RepoProcessor(repo_zip_path, None, ignore_dirs)  # Add ignore_dirs here
     repo_text = repo_processor.process_repo()
     
-    
-    with open("output/repo_text.txt", "w", encoding="utf-8") as outfile:
-        outfile.write(repo_text)
     
     logging.info(f"Repository text has been successfully processed.")
 
@@ -24,7 +22,10 @@ def main(repo_zip_path: str, output_file: str, doc_type: str = "documentation", 
     else:
         docs_content = text_to_docs.generate_docs(repo_text)
 
-    # Save the generated documentation to the specified output file
+    output_dir = os.path.dirname(output_file)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    
     with open(output_file, "w", encoding="utf-8") as outfile:
         outfile.write(docs_content)
     logging.info(f"Documentation has been successfully saved to {output_file}.")
