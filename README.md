@@ -70,6 +70,7 @@ To run Repo2Docs on your local machine, follow these steps:
    ```
 
    To generate diagrams instead of documentation, use `--type diagram`.
+   To generate database erd diagrams, use `--type database`.
 
 ## Supported File Types
 
