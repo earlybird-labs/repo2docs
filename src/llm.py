@@ -25,7 +25,7 @@ class OpenAIClient(LLMClient):
                 *messages
             ]
         )
-        return response.choices[0].message
+        return response.choices[0].message.content
 
 class AnthropicClient(LLMClient):
     def __init__(self, api_key):
