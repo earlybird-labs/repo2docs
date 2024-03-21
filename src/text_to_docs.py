@@ -34,4 +34,13 @@ class TextToDocs:
             messages=[{"role": "user", "content": repo_txt}]
         )
         return response
+    
+    def generate_database(self, repo_txt):
+        """Generate a database ERD from the text."""
+        database_prompt = load_prompt("database.txt")
+        response = self.client.generate_response(
+            prompt=database_prompt,
+            messages=[{"role": "user", "content": repo_txt}]
+        )
+        return response
 

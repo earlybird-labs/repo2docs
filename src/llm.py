@@ -15,7 +15,7 @@ class OpenAIClient(LLMClient):
     def __init__(self, api_key):
         self.client = openai.OpenAI(api_key=api_key)
 
-    def generate_response(self, prompt, model="gpt-4-turbo-preview", max_tokens=3000, temperature=0.5, messages=[]):
+    def generate_response(self, prompt, model="gpt-4-turbo-preview", max_tokens=4000, temperature=0.5, messages=[]):
         response = self.client.chat.completions.create(
             model=model,
             max_tokens=max_tokens,
@@ -31,7 +31,7 @@ class AnthropicClient(LLMClient):
     def __init__(self, api_key):
         self.client = anthropic.Anthropic(api_key=api_key)
 
-    def generate_response(self, prompt, model="claude-3-sonnet-20240229", max_tokens=3000, temperature=0.5, messages=[]):
+    def generate_response(self, prompt, model="claude-3-sonnet-20240229", max_tokens=4000, temperature=0.5, messages=[]):
         response = self.client.messages.create(
             model=model,
             max_tokens=max_tokens,
