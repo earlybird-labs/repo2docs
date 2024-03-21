@@ -4,13 +4,24 @@ Repo2Docs is a Python-based tool designed to convert the contents of a GitHub re
 
 ## How It Works
 
-Repo2Docs operates in three main stages:
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant Main as Main Script
+    participant RP as RepoProcessor
+    participant TD as TextToDocs
+    participant LLM as LLMClient
+    U->>Main: Execute with parameters
+    Main->>RP: Process repository
+    RP->>Main: Return processed text
+    Main->>TD: Request documentation type
+    TD->>LLM: Request LLM generation
+    LLM->>TD: Return generated content
+    TD->>Main: Return documentation
+    Main->>U: Save documentation to file
+```
+*Caption: This sequence diagram illustrates the flow of interactions from the user executing the script to the generation and saving of documentation.*
 
-1. **Repository Processing**: The tool first processes the GitHub repository, which can be provided as a `.zip` file or a URL. It filters relevant files based on their extensions and content, removing unnecessary files like tests or examples and cleaning up comments and docstrings.
-
-2. **Text Conversion**: The processed repository text is then converted into documentation or diagrams. This is done using a language model API, which generates human-like text based on the repository's content.
-
-3. **Documentation Generation**: Finally, the generated text is saved as documentation in the specified output file format. The tool supports generating either standard documentation or diagrams, depending on the user's choice.
 
 ## Running Repo2Docs Locally
 
