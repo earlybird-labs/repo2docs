@@ -10,11 +10,12 @@ import ast
 class RepoProcessor:
     """A class to process files from a GitHub repository."""
 
-    SUPPORTED_EXTENSIONS = [".py", ".js", ".jsx", ".ts", ".tsx"]
+    SUPPORTED_EXTENSIONS = [".py", ".js", ".jsx", ".ts", ".tsx", ".c", ".cpp", ".h", ".hpp"]
 
-    def __init__(self, repo_path: str, output_file: str):
+    def __init__(self, repo_path: str, output_file: str, ignore_dirs: list = []):
         self.repo_path = repo_path
         self.output_file = output_file
+        self.ignore_dirs = ignore_dirs
 
     def process_repo(self) -> str:
         """Process files from the repository."""
@@ -72,10 +73,10 @@ class RepoProcessor:
             and self._is_likely_useful_file(file_path)
         )
 
-    @staticmethod
-    def _is_likely_useful_file(file_path: str) -> bool:
+    
+    def _is_likely_useful_file(self, file_path: str) -> bool:
         """Determine if the file is likely to be useful by excluding certain directories and specific file types."""
-        excluded_dirs = ["docs", "examples", "tests", "test", "__pycache__", "scripts", "utils", "benchmarks", "node_modules", ".venv"]
+        excluded_dirs = ["docs", "examples", "tests", "test", "__pycache__", "scripts", "utils", "benchmarks", "node_modules", ".venv"] + self.ignore_dirs
         utility_or_config_files = ["hubconf.py", "setup.py", "package-lock.json"]
         github_workflow_or_docs = ["stale.py", "gen-card-", "write_model_card"]
 
@@ -91,7 +92,7 @@ class RepoProcessor:
         """Clean and prepare file content for output, using the correct commenting syntax."""
         if file_path.endswith(".py"):
             return self._remove_python_comments_and_docstrings(file_content)
-        elif file_path.endswith((".js", ".jsx", ".ts", ".tsx")):
+        elif file_path.endswith((".js", ".jsx", ".ts", ".tsx", ".c", ".cpp", ".h", ".hpp")):
             return self._remove_js_ts_comments(file_content)
         else:
             return file_content
@@ -131,10 +132,11 @@ class RepoProcessor:
         """Determine the correct comment syntax based on the file extension."""
         if file_path.endswith((".py",)):
             return "#"
-        elif file_path.endswith((".js", ".jsx", ".ts", ".tsx")):
+        elif file_path.endswith((".js", ".jsx", ".ts", ".tsx", ".c", ".cpp", ".h", ".hpp")):
             return "//"
         else:
             return "#"  # Default to Python comment syntax as a fallback
+
 
     # def gui_process_repo(self):
     #     """Process repository using a GUI to select files."""
