@@ -4,8 +4,8 @@ import zipfile
 import io
 import ast
 
-import tkinter as tk
-from tkinter import filedialog, simpledialog
+# import tkinter as tk
+# from tkinter import filedialog, simpledialog
 
 class RepoProcessor:
     """A class to process files from a GitHub repository."""
@@ -136,31 +136,31 @@ class RepoProcessor:
         else:
             return "#"  # Default to Python comment syntax as a fallback
 
-    def gui_process_repo(self):
-        """Process repository using a GUI to select files."""
-        root = tk.Tk()
-        root.withdraw()  # We don't want a full GUI, so keep the root window from appearing
+    # def gui_process_repo(self):
+    #     """Process repository using a GUI to select files."""
+    #     root = tk.Tk()
+    #     root.withdraw()  # We don't want a full GUI, so keep the root window from appearing
 
-        # Show an "Open" dialog box and return the path to the selected file
-        self.repo_path = filedialog.askopenfilename(
-            title="Select repository ZIP file",
-            filetypes=(("ZIP files", "*.zip"), ("All files", "*.*"))
-        )
-        if not self.repo_path:
-            print("No file selected. Exiting.")
-            sys.exit(0)
+    #     # Show an "Open" dialog box and return the path to the selected file
+    #     self.repo_path = filedialog.askopenfilename(
+    #         title="Select repository ZIP file",
+    #         filetypes=(("ZIP files", "*.zip"), ("All files", "*.*"))
+    #     )
+    #     if not self.repo_path:
+    #         print("No file selected. Exiting.")
+    #         sys.exit(0)
 
-        self.output_file = filedialog.asksaveasfilename(
-            title="Save output file as...",
-            defaultextension=".txt",
-            filetypes=(("Text files", "*.txt"), ("All files", "*.*"))
-        )
-        if not self.output_file:
-            print("No output file specified. Exiting.")
-            sys.exit(0)
+    #     self.output_file = filedialog.asksaveasfilename(
+    #         title="Save output file as...",
+    #         defaultextension=".txt",
+    #         filetypes=(("Text files", "*.txt"), ("All files", "*.*"))
+    #     )
+    #     if not self.output_file:
+    #         print("No output file specified. Exiting.")
+    #         sys.exit(0)
 
-        self.process_repo()
-        print(f"Repository content has been successfully saved to {self.output_file}.")
+    #     self.process_repo()
+    #     print(f"Repository content has been successfully saved to {self.output_file}.")
 
 
 if __name__ == "__main__":
