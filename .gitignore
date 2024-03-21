@@ -1,0 +1,6 @@
+*.pyc
+env
+workspace
+input
+output
+.env
