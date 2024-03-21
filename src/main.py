@@ -3,10 +3,15 @@ import logging
 from repo_to_text import RepoProcessor
 from text_to_docs import TextToDocs
 
-def main(repo_zip_path: str, output_file: str, doc_type: str = "documentation", llm: str = "openai"):
+def main(repo_zip_path: str, output_file: str, doc_type: str = "documentation", llm: str = "openai",  ignore_dirs: list = []):
     # Process the .zip file to get repository text
-    repo_processor = RepoProcessor(repo_zip_path, None)  # Output file is None, we'll handle saving in this script
+    repo_processor = RepoProcessor(repo_zip_path, None, ignore_dirs)  # Add ignore_dirs here
     repo_text = repo_processor.process_repo()
+    
+    
+    with open("output/repo_text.txt", "w", encoding="utf-8") as outfile:
+        outfile.write(repo_text)
+    
     logging.info(f"Repository text has been successfully processed.")
 
     # Convert the repository text to documentation
@@ -34,8 +39,8 @@ if __name__ == "__main__":
     parser.add_argument("output_file", help="The output file path where the documentation will be saved.", default="docs.md")
     parser.add_argument("--type", choices=["documentation", "diagram", "database"], default="documentation", help="Specify the type of documentation to generate (documentation or diagram).")
     parser.add_argument("--llm", choices=["openai", "anthropic"], default="openai", help="Specify the language model API to use for generating documentation.")
+    parser.add_argument("--ignore_dirs", nargs='*', default=[], help="List of directories to ignore.")
 
     args = parser.parse_args()
 
-    main(args.repo_zip_path, args.output_file, args.type, args.llm)
-
+    main(args.repo_zip_path, args.output_file, args.type, args.llm, args.ignore_dirs)
