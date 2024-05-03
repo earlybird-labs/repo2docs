@@ -25,51 +25,32 @@ sequenceDiagram
 *Caption: This sequence diagram illustrates the flow of interactions from the user executing the script to the generation and saving of documentation.*
 
 
-## Running Repo2Docs Locally
+## Using Repo2Docs
 
 To run Repo2Docs on your local machine, follow these steps:
 
-1. **Clone the Repository**:
+1. **Install Repo2Docs**:
    ```
-   git clone https://github.com/earlybird-labs/repo2docs.git
-   cd repo2docs
-   ```
-
-2. **Create and Activate Virtual Environment**:
-
-   First, ensure you have Python installed on your system. Then, create a virtual environment and activate it:
-   
-   For macOS/Linux:
-   ```
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-   
-   For Windows:
-   ```
-   python -m venv venv
-   .\venv\Scripts\activate
+   pip install repo2docs
    ```
 
-   **Install Dependencies**:
-   
-   After activating the virtual environment, install the required dependencies by running:
-   ```
-   pip install -r requirements.txt
-   ```
 
-3. **Set Up Environment Variables**:
+2. **Set Up Environment Variables**:
    Create a `.env` file in the root directory and add your language model API keys:
    ```
    OPENAI_API_KEY=your_openai_api_key_here
    ANTHROPIC_API_KEY=your_anthropic_api_key_here
    ```
 
-4. **Run the Tool**:
-   Use the following command to convert a repository to documentation. Replace `path_to_repo.zip` and `output_file.md` with your repository's `.zip` file path and your desired output file path, respectively.
+3. **Run the Tool**:
+
+   cd into the directory where the repo is located
    ```
-   cd src
-   python repo2docs.py input/path_to_repo.zip output/output_file.md --type documentation --llm openai
+   cd <path_to_repo>
+   ```
+   Run the following command to generate documentation:
+   ```
+   repo2docs --dir_path . --output_file documentation.md --type documentation --llm openai
    ```
 
    To generate mobile documentation, use `--type mobile`.
