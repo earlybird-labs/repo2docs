@@ -19,6 +19,10 @@ class LLMClient(ABC):
     def generate_response(self, prompt, model, max_tokens, temperature, messages):
         pass
 
+    # def get_api_key(self, env_var, service_name):
+    #     api_key = get_api_key(env_var, service_name)
+    #     return api_key
+
 
 class OpenAIClient(LLMClient):
     def __init__(self, api_key: str = None, model: str = None):
@@ -46,7 +50,7 @@ class OpenAIClient(LLMClient):
 class AnthropicClient(LLMClient):
     def __init__(self, api_key: str = None, model: str = None):
         if not api_key:
-            api_key = self.get_api_key("ANTHROPIC_API_KEY", "Anthropic")
+            api_key = get_api_key("ANTHROPIC_API_KEY", "Anthropic")
         self.model = model or "claude-3-haiku-20240307"
         self.client = anthropic.Anthropic(api_key=api_key)
 

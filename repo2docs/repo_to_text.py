@@ -4,12 +4,9 @@ import requests
 import zipfile
 import io
 
-
 import ast
 import esprima
 from pycparser import c_parser, c_ast
-
-from pprint import pprint
 
 
 class RepoProcessor:
@@ -113,16 +110,25 @@ class RepoProcessor:
             return ""
 
     def _clean_file_content(self, file_path: str, file_content: str) -> str:
-        """Clean the file content by removing unnecessary parts."""
+        """Clean the file content by removing unnecessary parts and excessive line breaks."""
         _, ext = os.path.splitext(file_path)
         if ext == ".py":
-            return self._clean_python_file(file_content)
+            cleaned_content = self._clean_python_file(file_content)
         elif ext in [".js", ".jsx", ".ts", ".tsx"]:
-            return self._clean_javascript_file(file_content)
+            cleaned_content = self._clean_javascript_file(file_content)
         elif ext in [".c", ".cpp", ".h", ".hpp"]:
-            return self._clean_c_cpp_file(file_content)
+            cleaned_content = self._clean_c_cpp_file(file_content)
         else:
-            return file_content
+            cleaned_content = file_content
+
+        cleaned_content = self._remove_excessive_line_breaks(cleaned_content)
+        return cleaned_content
+
+    def _remove_excessive_line_breaks(self, content: str) -> str:
+        """Remove three or more consecutive line breaks from the content."""
+        import re
+
+        return re.sub(r"\n{3,}", "\n\n", content)
 
     def _clean_python_file(self, file_content: str) -> str:
         """Clean the Python file content by removing unnecessary parts."""
@@ -158,9 +164,32 @@ class RepoProcessor:
                     cleaned_lines.extend(file_content.split("\n")[start_line:end_line])
 
             return "\n".join(cleaned_lines)
-        except esprima.error_handler.Error:
-            # If parsing fails, return the original file content
-            return file_content
+        except Exception as e:
+            # If parsing fails, return the cleaned file content without comments
+            return self._remove_comments(file_content)
+
+    def _remove_comments(self, file_content: str) -> str:
+        """Remove comments from the file content using regex."""
+        import re
+
+        # Regex patterns to match single line and multi-line comments
+        patterns = [
+            r"//.*",  # Single line comments
+            r"/\*[\s\S]*?\*/",  # Multi-line comments in C, C++, JavaScript
+            r"#.*",  # Single line comments in Python
+            r"\'\'\'[\s\S]*?\'\'\'",  # Multi-line comments in Python with triple single quotes
+            r"\"\"\"[\s\S]*?\"\"\"",  # Multi-line comments in Python with triple double quotes
+            r"{/\*[\s\S]*?\*/}",  # Multi-line comments in JSX within curly braces
+            r"{//.*?}",  # Single line comments in JSX within curly braces
+        ]
+
+        # Combine all patterns into a single pattern
+        combined_pattern = "|".join(patterns)
+
+        # Use regex to substitute matched patterns with an empty string
+        cleaned_content = re.sub(combined_pattern, "", file_content, flags=re.MULTILINE)
+
+        return cleaned_content
 
     def _clean_c_cpp_file(self, file_content: str) -> str:
         """Clean the C/C++ file content by removing unnecessary parts."""

@@ -27,6 +27,9 @@ def main(
     repo_processor = RepoProcessor(dir_path, None, ignore_dirs)
     repo_text = repo_processor.process_repo()
 
+    with open("repo_text.txt", "w", encoding="utf-8") as outfile:
+        outfile.write(repo_text)
+
     logging.info(f"Repository text has been successfully processed.")
 
     # Convert the repository text to documentation
@@ -143,6 +146,7 @@ def run():
                 default="",
                 style=style,
             ).execute()
+            print(args.dir_path)
 
     if args.output_file is None:
         args.output_file = inquirer.select(
