@@ -21,7 +21,7 @@ class LLMClient(ABC):
         """
         api_key = os.getenv(env_var)
         if not api_key:
-            print(f"API key for {client_name} ({env_var}) not found. Please enter your API key:")
+            print(f"API key for {client_name} ({env_var}) not found. Please enter your API key (contents will be hidden):")
             api_key = getpass.getpass(prompt='')
         return api_key
 
