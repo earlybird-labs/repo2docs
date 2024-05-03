@@ -3,11 +3,9 @@ import logging
 import zipfile
 import argparse
 
-from prompt_toolkit import prompt
-from prompt_toolkit.formatted_text import FormattedText
-from prompt_toolkit.styles import Style
-from prompt_toolkit.shortcuts import radiolist_dialog
-
+from InquirerPy import inquirer
+from InquirerPy.validator import PathValidator
+from InquirerPy.utils import get_style
 
 from repo2docs.repo_to_text import RepoProcessor
 from repo2docs.text_to_docs import TextToDocs
@@ -107,56 +105,85 @@ def run():
 
     args = parser.parse_args()
 
-    style = Style.from_dict({
-        'prompt': '#0031C5',
-        'default': '#0B8800',
+    style = get_style({
+        "questionmark": "#e5c07b",
+        "answermark": "#e5c07b",
+        "answer": "#61afef",
+        "input": "#98c379",
+        "question": "",
+        "answered_question": "",
+        "instruction": "#abb2bf",
+        "long_instruction": "#abb2bf",
+        "pointer": "#61afef",
+        "checkbox": "#98c379",
+        "separator": "",
+        "skipped": "#5c6370",
+        "validator": "",
+        "marker": "#e5c07b",
+        "fuzzy_prompt": "#c678dd",
+        "fuzzy_info": "#abb2bf",
+        "fuzzy_border": "#4b5263",
+        "fuzzy_match": "#c678dd",
+        "spinner_pattern": "#e5c07b",
+        "spinner_text": "",
     })
 
-    # Prompt for input if arguments are not provided
+    # Convert all prompts to use InquirerPy
     if args.dir_path is None:
-        args.dir_path = prompt(FormattedText([
-            ('class:prompt', 'Enter the directory path to process '),
-            ('class:default', '(leave blank for current directory)'),
-            ('class:prompt', ': ')
-        ]), default="", style=style)
-    if args.dir_path == "":
-        args.dir_path = "."
-        
+        dir_choice = inquirer.select(
+            message="Select the directory to process:",
+            choices=["Current directory", "Enter directory"],
+            default="Current directory",
+            style=style
+        ).execute()
+
+        if dir_choice == "Current directory":
+            args.dir_path = "."
+        elif dir_choice == "Enter directory":
+            args.dir_path = inquirer.text(
+                message="Enter the directory path to process (leave blank for current directory):",
+                validate=PathValidator(is_dir=True, message="Please enter a valid directory path"),
+                default="",
+                style=style
+            ).execute()
+
     if args.output_file is None:
-        args.output_file = prompt(FormattedText([
-            ('class:prompt', 'Enter the output file path '),
-            ('class:default', '(leave blank for output.md)'),
-            ('class:prompt', ': ')
-        ]), default="", style=style)
-    if args.output_file == "":
-        args.output_file = "output.md"
-        
-    if args.prompt is None:
-        args.prompt = prompt(FormattedText([
-            ('class:prompt', 'Enter the prompt for generating documentation: '),
-            ('class:default', '(leave blank for presets)'),
-            ('class:prompt', ': ')
-        ]), default="", style=style)
-        
-    if args.prompt is "":
-        args.doc_type = prompt(FormattedText([
-            ('class:prompt', 'Enter the type of documentation to generate '),
-            ('class:default', '(default: documentation | diagram | database | mobile)'),
-            ('class:prompt', ': ')
-        ]), default="", style=style)
-        if args.doc_type == "":
-            args.doc_type = "documentation"
-        args.doc_type = args.doc_type.lower().strip()
-    
-        
+        args.output_file = inquirer.select(
+            message="Select the output file path:",
+            choices=["Default (output.md)", "Enter file path"],
+            default="Default (output.md)",
+            style=style
+        ).execute()
+        if args.output_file == "Enter file path":
+            args.output_file = inquirer.text(
+                message="Enter the output file path name:",
+                default="",
+                style=style
+            ).execute()
+
+    if args.prompt is None and args.doc_type is None:
+        args.prompt = inquirer.select(
+            message="Choose from preset prompts or enter a custom prompt:",
+            choices=["documentation", "diagram", "database", "mobile", "Enter custom prompt"],
+            default="documentation",
+            style=style
+        ).execute()
+        if args.prompt == "Enter custom prompt":
+            args.prompt = inquirer.text(
+                message="Enter the custom prompt:",
+                default="",
+                style=style
+            ).execute()
+        else:
+            args.doc_type = args.prompt
+            args.prompt = None
+
     if args.llm is None:
-        args.llm = prompt(FormattedText([
-            ('class:prompt', 'Enter the language model API to use '),
-            ('class:default', '(default: anthropic | openai)'),
-            ('class:prompt', ': ')
-        ]), default="", style=style)
-    if args.llm == "":
-        args.llm = "anthropic"
+        args.llm = inquirer.select(
+            message="Select the language model API to use:",
+            choices=["anthropic", "openai"],
+            default="anthropic",
+            style=style
+        ).execute()
 
     main(args.dir_path, args.output_file, args.prompt, args.doc_type, args.llm, args.ignore_dirs)
-
