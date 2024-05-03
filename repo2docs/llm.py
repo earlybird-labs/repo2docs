@@ -26,12 +26,12 @@ class LLMClient(ABC):
         return api_key
 
 class OpenAIClient(LLMClient):
-    def __init__(self, api_key=None, model=None):
+    def __init__(self, api_key=None, model='gpt-4-turbo'):
         if not api_key:
             api_key = self.get_api_key('OPENAI_API_KEY', 'OpenAI')
-        if not model:
-            model = 'gpt-4-turbo'
+        self.model = model
         self.client = openai.OpenAI(api_key=api_key)
+        
 
     def generate_response(
         self,
@@ -50,11 +50,10 @@ class OpenAIClient(LLMClient):
 
 
 class AnthropicClient(LLMClient):
-    def __init__(self, api_key=None, model=None):
+    def __init__(self, api_key=None, model='claude-3-haiku-20240307'):
         if not api_key:
             api_key = self.get_api_key('ANTHROPIC_API_KEY', 'Anthropic')
-        if not model:
-            model = 'claude-3-haiku-20240307'
+        self.model = model
         self.client = anthropic.Anthropic(api_key=api_key)
 
     def generate_response(
