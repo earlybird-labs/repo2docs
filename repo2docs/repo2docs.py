@@ -143,7 +143,7 @@ def run():
     if args.llm is None:
         args.llm = prompt(FormattedText([
             ('class:prompt', 'Enter the language model API to use '),
-            ('class:default', '(default: anthropic)'),
+            ('class:default', '(default: anthropic | openai)'),
             ('class:prompt', ': ')
         ]), default="", style=style)
     if args.llm == "":
