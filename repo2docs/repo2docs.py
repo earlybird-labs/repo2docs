@@ -37,16 +37,7 @@ def main(
     
     # Convert the repository text to documentation
     text_to_docs = TextToDocs(llm, model)
-    if prompt:
-        docs_content = text_to_docs.generate_custom(repo_text, prompt)
-    elif doc_type == "diagram":
-        docs_content = text_to_docs.generate_diagram(repo_text)
-    elif doc_type == "database":
-        docs_content = text_to_docs.generate_database(repo_text)
-    elif doc_type == "mobile":
-        docs_content = text_to_docs.generate_mobile(repo_text)
-    else:
-        docs_content = text_to_docs.generate_docs(repo_text)
+    docs_content = text_to_docs.generate_docs(repo_text, doc_type, prompt)
 
     if not os.path.dirname(output_file):
         output_file = os.path.join(os.getcwd(), output_file)
