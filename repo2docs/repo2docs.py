@@ -54,8 +54,10 @@ def main(
         outfile.write(docs_content)
     logging.info(f"Documentation has been successfully saved to {output_file}.")
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+
+
+
+def run():
 
     parser = argparse.ArgumentParser(
         description="Convert a directory into documentation."
@@ -70,15 +72,14 @@ if __name__ == "__main__":
         help="The output file path where the documentation will be saved.",
         default="output.md",
     )
-    
     parser.add_argument(
         "--prompt",
         help="The prompt to use for generating the documentation.",
         default=None
     )
-    
     parser.add_argument(
         "--type",
+        dest="doc_type",  # Ensure this matches the parameter name in main
         choices=["documentation", "diagram", "database", "mobile"],
         default="documentation",
         help="Specify the type of documentation to generate.",
@@ -86,7 +87,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--llm",
         choices=["openai", "anthropic"],
-        default="openai",
+        default="anthropic",
         help="Specify the language model API to use for generating documentation.",
     )
     parser.add_argument(
@@ -95,5 +96,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    main(args.dir_path, args.output_file, args.prompt, args.type, args.llm, args.ignore_dirs)
+    main(args.dir_path, args.output_file, args.prompt, args.doc_type, args.llm, args.ignore_dirs)
 

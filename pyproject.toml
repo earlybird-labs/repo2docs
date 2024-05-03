@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "repo2docs"
-version = "0.1.4"
+version = "0.1.6"
 description = "Documentation from your codebase using LLMs"
 authors = ["Joe Petrantoni <79169021+jpetrantoni@users.noreply.github.com>"]
 license = "MIT"
@@ -14,7 +14,7 @@ instructor = "^1.2.5"
 python-dotenv = "^1.0.1"
 
 [tool.poetry.scripts]
-repo2docs = "repo2docs.repo2docs:main"
+repo2docs = "repo2docs.repo2docs:run"
 
 
 

@@ -56,6 +56,7 @@ To run Repo2Docs on your local machine, follow these steps:
    To generate mobile documentation, use `--type mobile`.
    To generate diagrams instead of documentation, use `--type diagram`.
    To generate database erd diagrams, use `--type database`.
+   To use a custom prompt, use `--prompt <prompt>`.
 
 ## Supported File Types
 

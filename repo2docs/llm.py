@@ -3,6 +3,7 @@ import os
 import openai
 import anthropic
 import sys
+import getpass
 
 class LLMClient(ABC):
     """
@@ -21,9 +22,8 @@ class LLMClient(ABC):
         api_key = os.getenv(env_var)
         if not api_key:
             print(f"API key for {client_name} ({env_var}) not found. Please enter your API key:")
-            api_key = input()
+            api_key = getpass.getpass(prompt='')
         return api_key
-
 
 class OpenAIClient(LLMClient):
     def __init__(self, api_key=None):

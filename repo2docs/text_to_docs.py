@@ -1,26 +1,25 @@
 import os
 from dotenv import load_dotenv
-from repo2docs.llm import OpenAIClient, AnthropicClient
+from repo2docs.llm import OpenAIClient, AnthropicClient, LLMClient
 from repo2docs.prompts import documentation_prompt, diagram_prompt, mobile_prompt, database_prompt
 
 load_dotenv()
 
-
 class TextToDocs:
-    """A class to convert text to documentation using a language model API."""
-
     def __init__(self, api_choice):
         if api_choice == "anthropic":
             api_key = os.getenv("ANTHROPIC_API_KEY")
+            if not api_key:
+                api_key = LLMClient.get_api_key('ANTHROPIC_API_KEY', 'Anthropic')
             self.client = AnthropicClient(api_key=api_key)
         elif api_choice == "openai":
             api_key = os.getenv("OPENAI_API_KEY")
+            if not api_key:
+                api_key = LLMClient.get_api_key('OPENAI_API_KEY', 'OpenAI')
             self.client = OpenAIClient(api_key=api_key)
         else:
-            raise ValueError(
-                "Invalid API choice. Please choose either 'anthropic' or 'openai'."
-            )
-
+            raise ValueError("Invalid API choice. Please choose either 'anthropic' or 'openai'.")
+        
     def generate_docs(self, repo_txt):
         """Generate documentation from the text."""
         response = self.client.generate_response(
