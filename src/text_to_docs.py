@@ -5,6 +5,7 @@ from llm import OpenAIClient, AnthropicClient
 
 load_dotenv()
 
+
 class TextToDocs:
     """A class to convert text to documentation using a language model API."""
 
@@ -15,32 +16,39 @@ class TextToDocs:
         elif api_choice == "openai":
             self.client = OpenAIClient(api_key=api_key)
         else:
-            raise ValueError("Invalid API choice. Please choose either 'anthropic' or 'openai'.")
+            raise ValueError(
+                "Invalid API choice. Please choose either 'anthropic' or 'openai'."
+            )
 
     def generate_docs(self, repo_txt):
         """Generate documentation from the text."""
         documentation_prompt = load_prompt("documentation.txt")
         response = self.client.generate_response(
             prompt=documentation_prompt,
-            messages=[{"role": "user", "content": repo_txt}]
+            messages=[{"role": "user", "content": repo_txt}],
         )
         return response
-    
+
     def generate_diagram(self, repo_txt):
         """Generate a diagram from the text."""
         diagram_prompt = load_prompt("diagrams.txt")
         response = self.client.generate_response(
-            prompt=diagram_prompt,
-            messages=[{"role": "user", "content": repo_txt}]
+            prompt=diagram_prompt, messages=[{"role": "user", "content": repo_txt}]
         )
         return response
-    
+
+    def generate_mobile(self, repo_txt):
+        """Generate a mobile application documentation from the text."""
+        mobile_prompt = load_prompt("mobile.txt")
+        response = self.client.generate_response(
+            prompt=mobile_prompt, messages=[{"role": "user", "content": repo_txt}]
+        )
+        return response
+
     def generate_database(self, repo_txt):
         """Generate a database ERD from the text."""
         database_prompt = load_prompt("database.txt")
         response = self.client.generate_response(
-            prompt=database_prompt,
-            messages=[{"role": "user", "content": repo_txt}]
+            prompt=database_prompt, messages=[{"role": "user", "content": repo_txt}]
         )
         return response
-

@@ -68,9 +68,11 @@ To run Repo2Docs on your local machine, follow these steps:
 4. **Run the Tool**:
    Use the following command to convert a repository to documentation. Replace `path_to_repo.zip` and `output_file.md` with your repository's `.zip` file path and your desired output file path, respectively.
    ```
-   python src/main.py path_to_repo.zip output_file.md --type documentation --llm openai
+   cd src
+   python repo2docs.py input/path_to_repo.zip output/output_file.md --type documentation --llm openai
    ```
 
+   To generate mobile documentation, use `--type mobile`.
    To generate diagrams instead of documentation, use `--type diagram`.
    To generate database erd diagrams, use `--type database`.
 
