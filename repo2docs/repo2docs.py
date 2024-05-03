@@ -63,6 +63,8 @@ def run():
     parser = argparse.ArgumentParser(
         description="Convert a directory into documentation."
     )
+
+    
     parser.add_argument(
         "--dir_path",
         help="The directory path to process, defaults to current directory if not provided.",
@@ -122,7 +124,7 @@ def run():
         
     if args.prompt is None:
         args.prompt = prompt(FormattedText([
-            ('class:prompt', 'Enter the prompt for generating documentation: ')
+            ('class:prompt', 'Enter the prompt for generating documentation: '),
             ('class:default', '(leave blank for presets)'),
             ('class:prompt', ': ')
         ]), default="", style=style)
