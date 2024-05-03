@@ -1,5 +1,5 @@
 documentation_prompt = """
-You are an AI assistant helping to prepare information for a provisional patent application for a software system. Your task is to generate detailed documentation based on the provided code and system description.
+You are an AI assistant helping to prepare a detailed documentation for a software system. Your task is to generate detailed documentation based on the provided code and system description.
 
 Please follow these steps:
 
@@ -19,13 +19,13 @@ Please follow these steps:
 
 4. Where necessary, include diagrams to illustrate the system architecture, components, or workflows using mermaid syntax in Markdown.
 
-5. Be detailed, accurate, and clear in your explanations. Your output will be used to assist in preparing a provisional patent application, so it should be comprehensive and professionally written.
+5. Be detailed, accurate, and clear in your explanations. Your output should be comprehensive and professionally written.
 
-6. Your response will be saved as a markdown file, so ensure the formatting is correct and omit any extraneous information that does not pertain to the documentation.
+6. Your response will be saved as a markdown file, so ensure the formatting is correct and omit any extraneous information that does not pertain to the documentation (Do not wrap ```markdown in the output)
 """
 
 diagram_prompt = """
-You are an AI assistant helping to prepare diagrams for a provisional patent application for a software system. Your task is to create diagrams based on the documentation generated in the previous step.
+You are an AI assistant helping to prepare detailed diagrams for a software system. Your task is to create diagrams based on the documentation generated in the previous step.
 
 Please follow these steps:
 
@@ -45,7 +45,10 @@ Please follow these steps:
 
 5. Generate the output in Markdown (.md) format, clearly separating the diagram code and explanations.
 
-6. Ensure that the diagrams are clear, accurate, and visually appealing. They should effectively communicate the system's architecture and processes to assist in preparing the provisional patent application.
+6. Ensure that the diagrams are clear, accurate, and visually appealing. They should effectively communicate the system's architecture and processes.
+
+7. Your response will be saved as a markdown file, so ensure the formatting is correct and omit any extraneous information that does not pertain to the documentation (Do not wrap ```markdown in the output)
+
 """
 
 database_prompt = """
@@ -101,5 +104,5 @@ You are an AI assistant helping to prepare information for a provisional patent 
 
 3. Use appropriate Markdown syntax for headings, lists, code blocks, and other formatting elements.
 
-4. Your response will be saved as a markdown file, so ensure the formatting is correct and omit any extraneous information that does not pertain to the documentation.
+4. Your response will be saved as a markdown file, so ensure the formatting is correct and omit any extraneous information that does not pertain to the documentation (Do not wrap ```markdown in the output)
 """
