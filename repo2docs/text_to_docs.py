@@ -10,10 +10,11 @@ class TextToDocs:
     """A class to convert text to documentation using a language model API."""
 
     def __init__(self, api_choice):
-        api_key = os.getenv(f"{api_choice.upper()}_API_KEY")
         if api_choice == "anthropic":
+            api_key = os.getenv("ANTHROPIC_API_KEY")
             self.client = AnthropicClient(api_key=api_key)
         elif api_choice == "openai":
+            api_key = os.getenv("OPENAI_API_KEY")
             self.client = OpenAIClient(api_key=api_key)
         else:
             raise ValueError(
