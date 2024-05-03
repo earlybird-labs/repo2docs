@@ -4,28 +4,7 @@ Inspired by [github2file](https://github.com/cognitivecomputations/github2file)
 
 Repo2Docs is a Python-based tool designed to convert the contents of a repository into comprehensive documentation or diagrams. This tool leverages language model APIs such as OpenAI or Anthropic to process and generate documentation, making it easier for developers to create documentation for their projects.
 
-## How It Works
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant Main as Main Script
-    participant RP as RepoProcessor
-    participant TD as TextToDocs
-    participant LLM as LLMClient
-    U->>Main: Execute with parameters
-    Main->>RP: Process repository
-    RP->>Main: Return processed text
-    Main->>TD: Request documentation type
-    TD->>LLM: Request LLM generation
-    LLM->>TD: Return generated content
-    TD->>Main: Return documentation
-    Main->>U: Save documentation to file
-```
-*Caption: This sequence diagram illustrates the flow of interactions from the user executing the script to the generation and saving of documentation.*
-
-
-## Using Repo2Docs
+## Usage
 
 To run Repo2Docs on your local machine, follow these steps:
 
