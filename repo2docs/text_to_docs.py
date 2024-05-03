@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
-from prompt_loader import load_prompt
-from llm import OpenAIClient, AnthropicClient
+from repo2docs.llm import OpenAIClient, AnthropicClient
+from repo2docs.prompts import documentation_prompt, diagram_prompt, mobile_prompt, database_prompt
 
 load_dotenv()
 
@@ -22,7 +22,6 @@ class TextToDocs:
 
     def generate_docs(self, repo_txt):
         """Generate documentation from the text."""
-        documentation_prompt = load_prompt("documentation.txt")
         response = self.client.generate_response(
             prompt=documentation_prompt,
             messages=[{"role": "user", "content": repo_txt}],
@@ -31,7 +30,6 @@ class TextToDocs:
 
     def generate_diagram(self, repo_txt):
         """Generate a diagram from the text."""
-        diagram_prompt = load_prompt("diagrams.txt")
         response = self.client.generate_response(
             prompt=diagram_prompt, messages=[{"role": "user", "content": repo_txt}]
         )
@@ -39,7 +37,6 @@ class TextToDocs:
 
     def generate_mobile(self, repo_txt):
         """Generate a mobile application documentation from the text."""
-        mobile_prompt = load_prompt("mobile.txt")
         response = self.client.generate_response(
             prompt=mobile_prompt, messages=[{"role": "user", "content": repo_txt}]
         )
@@ -47,8 +44,15 @@ class TextToDocs:
 
     def generate_database(self, repo_txt):
         """Generate a database ERD from the text."""
-        database_prompt = load_prompt("database.txt")
         response = self.client.generate_response(
             prompt=database_prompt, messages=[{"role": "user", "content": repo_txt}]
         )
         return response
+
+    def generate_custom(self, repo_txt, prompt):
+        """Generate a custom documentation from the text."""
+        response = self.client.generate_response(
+            prompt=prompt, messages=[{"role": "user", "content": repo_txt}]
+        )
+        return response
+
