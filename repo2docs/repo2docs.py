@@ -160,6 +160,10 @@ def run():
                 default="",
                 style=style
             ).execute()
+            if args.output_file.split(".")[-1] != "md":
+                args.output_file += ".md"
+        else:
+            args.output_file = "output.md"
 
     if args.prompt is None and args.doc_type is None:
         args.prompt = inquirer.select(
