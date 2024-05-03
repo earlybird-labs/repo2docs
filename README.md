@@ -30,7 +30,11 @@ To run Repo2Docs on your local machine, follow these steps:
    ```
    cd <path_to_repo>
    ```
-   Run the following command to generate documentation:
+   Run the main command for an interactive prompt
+   ```
+   repo2docs
+   ```
+   or, run the main command with the following flags
    ```
    repo2docs --dir_path <path_to_repo> --output_file <output_file> --type <type> --llm <llm>
    ```
