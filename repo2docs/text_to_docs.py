@@ -6,7 +6,7 @@ from repo2docs.prompts import documentation_prompt, diagram_prompt, mobile_promp
 load_dotenv()
 
 class TextToDocs:
-    def __init__(self, api_choice):
+    def __init__(self, api_choice, model=None):
         if api_choice == "anthropic":
             api_key = os.getenv("ANTHROPIC_API_KEY")
             if not api_key:

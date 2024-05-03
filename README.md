@@ -53,13 +53,23 @@ To run Repo2Docs on your local machine, follow these steps:
    ```
    Run the following command to generate documentation:
    ```
-   repo2docs --dir_path . --output_file documentation.md --type documentation --llm openai
+   repo2docs --dir_path <path_to_repo> --output_file <output_file> --type <type> --llm <llm>
    ```
 
-   To generate mobile documentation, use `--type mobile`.
-   To generate diagrams instead of documentation, use `--type diagram`.
-   To generate database erd diagrams, use `--type database`.
-   To use a custom prompt, use `--prompt "<prompt>"`.
+   - Leaving `dir_path` empty will default to the current directory.
+   - Leaving `output_file` empty will default to `output.md`.
+   - Leaving `type` empty will default to `documentation`.
+     - To generate mobile documentation, use `--type mobile`.
+     - To generate diagrams instead of documentation, use `--type diagram`.
+     - To generate database erd diagrams, use `--type database`.
+     - To use a custom prompt,leave `type` empty and use `--prompt "<prompt>"`.
+   - Leaving `llm` empty will default to `openai`.
+     - To use Anthropic, use `--llm anthropic`.
+       - Defaults to `claude-3-haiku-20240307`.
+       - To use a specific model, use `--llm anthropic:<model>`.
+     - To use OpenAI, use `--llm openai`.
+       - Defaults to `gpt-4-turbo`.
+       - To use a specific model, use `--llm openai:<model>`.
 
 ## Supported File Types
 

@@ -26,21 +26,22 @@ class LLMClient(ABC):
         return api_key
 
 class OpenAIClient(LLMClient):
-    def __init__(self, api_key=None):
+    def __init__(self, api_key=None, model=None):
         if not api_key:
             api_key = self.get_api_key('OPENAI_API_KEY', 'OpenAI')
+        if not model:
+            model = 'gpt-4-turbo'
         self.client = openai.OpenAI(api_key=api_key)
 
     def generate_response(
         self,
         prompt,
-        model="gpt-4-turbo-preview",
         max_tokens=4000,
         temperature=0.5,
         messages=[],
     ):
         response = self.client.chat.completions.create(
-            model=model,
+            model=self.model,
             max_tokens=max_tokens,
             temperature=temperature,
             messages=[{"role": "system", "content": prompt}, *messages],
@@ -49,21 +50,22 @@ class OpenAIClient(LLMClient):
 
 
 class AnthropicClient(LLMClient):
-    def __init__(self, api_key=None):
+    def __init__(self, api_key=None, model=None):
         if not api_key:
             api_key = self.get_api_key('ANTHROPIC_API_KEY', 'Anthropic')
+        if not model:
+            model = 'claude-3-haiku-20240307'
         self.client = anthropic.Anthropic(api_key=api_key)
 
     def generate_response(
         self,
         prompt,
-        model="claude-3-haiku-20240307",
         max_tokens=4000,
         temperature=0.5,
         messages=[],
     ):
         response = self.client.messages.create(
-            model=model,
+            model=self.model,
             max_tokens=max_tokens,
             temperature=temperature,
             system=prompt,

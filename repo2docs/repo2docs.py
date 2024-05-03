@@ -30,8 +30,13 @@ def main(
 
     logging.info(f"Repository text has been successfully processed.")
     
+    if ":" in llm:
+        llm, model = llm.split(":")
+    else:
+        model = None
+    
     # Convert the repository text to documentation
-    text_to_docs = TextToDocs(llm)
+    text_to_docs = TextToDocs(llm, model)
     if prompt:
         docs_content = text_to_docs.generate_custom(repo_text, prompt)
     elif doc_type == "diagram":
