@@ -11,12 +11,12 @@ class TextToDocs:
             api_key = os.getenv("ANTHROPIC_API_KEY")
             if not api_key:
                 api_key = LLMClient.get_api_key('ANTHROPIC_API_KEY', 'Anthropic')
-            self.client = AnthropicClient(api_key=api_key)
+            self.client = AnthropicClient(api_key=api_key, model=model)
         elif api_choice == "openai":
             api_key = os.getenv("OPENAI_API_KEY")
             if not api_key:
                 api_key = LLMClient.get_api_key('OPENAI_API_KEY', 'OpenAI')
-            self.client = OpenAIClient(api_key=api_key)
+            self.client = OpenAIClient(api_key=api_key, model=model)
         else:
             raise ValueError("Invalid API choice. Please choose either 'anthropic' or 'openai'.")
         
