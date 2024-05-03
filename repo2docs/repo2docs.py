@@ -12,7 +12,7 @@ def main(
     output_file: str = "output.md",
     prompt: str = None,
     doc_type: str = "documentation",
-    llm: str = "openai",
+    llm: str = "anthropic",
     ignore_dirs: list = [],
 ):
     # Create a temporary zip file from the specified directory
@@ -91,7 +91,6 @@ def run():
     )
     parser.add_argument(
         "--llm",
-        choices=["openai", "anthropic"],
         default="anthropic",
         help="Specify the language model API to use for generating documentation.",
     )
