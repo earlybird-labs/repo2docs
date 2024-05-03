@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import os
 import openai
 import anthropic
-
+import sys
 
 class LLMClient(ABC):
     """
@@ -13,9 +13,22 @@ class LLMClient(ABC):
     def generate_response(self, prompt, model, max_tokens, temperature, messages):
         pass
 
+    @staticmethod
+    def get_api_key(env_var, client_name):
+        """
+        Retrieve API key from environment or prompt user if not found, specifying the client.
+        """
+        api_key = os.getenv(env_var)
+        if not api_key:
+            print(f"API key for {client_name} ({env_var}) not found. Please enter your API key:")
+            api_key = input()
+        return api_key
+
 
 class OpenAIClient(LLMClient):
-    def __init__(self, api_key):
+    def __init__(self, api_key=None):
+        if not api_key:
+            api_key = self.get_api_key('OPENAI_API_KEY', 'OpenAI')
         self.client = openai.OpenAI(api_key=api_key)
 
     def generate_response(
@@ -36,13 +49,14 @@ class OpenAIClient(LLMClient):
 
 
 class AnthropicClient(LLMClient):
-    def __init__(self, api_key):
+    def __init__(self, api_key=None):
+        if not api_key:
+            api_key = self.get_api_key('ANTHROPIC_API_KEY', 'Anthropic')
         self.client = anthropic.Anthropic(api_key=api_key)
 
     def generate_response(
         self,
         prompt,
-        # model="claude-3-sonnet-20240229",
         model="claude-3-haiku-20240307",
         max_tokens=4000,
         temperature=0.5,
