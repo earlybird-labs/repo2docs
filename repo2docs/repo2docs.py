@@ -2,7 +2,12 @@ import os
 import logging
 import zipfile
 import argparse
-import sys
+
+from prompt_toolkit import prompt
+from prompt_toolkit.formatted_text import FormattedText
+from prompt_toolkit.styles import Style
+from prompt_toolkit.shortcuts import radiolist_dialog
+
 
 from repo2docs.repo_to_text import RepoProcessor
 from repo2docs.text_to_docs import TextToDocs
@@ -55,19 +60,18 @@ def main(
 
 
 def run():
-
     parser = argparse.ArgumentParser(
         description="Convert a directory into documentation."
     )
     parser.add_argument(
-        "--dir_path", 
+        "--dir_path",
         help="The directory path to process, defaults to current directory if not provided.",
-        default="."
+        default=None
     )
     parser.add_argument(
         "--output_file",
         help="The output file path where the documentation will be saved.",
-        default="output.md",
+        default=None,
     )
     parser.add_argument(
         "--prompt",
@@ -76,14 +80,14 @@ def run():
     )
     parser.add_argument(
         "--type",
-        dest="doc_type",  # Ensure this matches the parameter name in main
+        dest="doc_type",
         choices=["documentation", "diagram", "database", "mobile"],
-        default="documentation",
+        default=None,
         help="Specify the type of documentation to generate.",
     )
     parser.add_argument(
         "--llm",
-        default="anthropic",
+        default=None,
         help="Specify the language model API to use for generating documentation.",
     )
     parser.add_argument(
@@ -91,6 +95,54 @@ def run():
     )
 
     args = parser.parse_args()
+
+    style = Style.from_dict({
+        'prompt': '#0031C5',
+        'default': '#0B8800',
+    })
+
+    # Prompt for input if arguments are not provided
+    if args.dir_path is None:
+        args.dir_path = prompt(FormattedText([
+            ('class:prompt', 'Enter the directory path to process '),
+            ('class:default', '(leave blank for current directory)'),
+            ('class:prompt', ': ')
+        ]), default="", style=style)
+    if args.dir_path == "":
+        args.dir_path = "."
+        
+    if args.output_file is None:
+        args.output_file = prompt(FormattedText([
+            ('class:prompt', 'Enter the output file path '),
+            ('class:default', '(leave blank for output.md)'),
+            ('class:prompt', ': ')
+        ]), default="", style=style)
+    if args.output_file == "":
+        args.output_file = "output.md"
+        
+    if args.prompt is None:
+        args.prompt = prompt(FormattedText([
+            ('class:prompt', 'Enter the prompt for generating documentation: ')
+            ('class:default', '(leave blank for presets)'),
+            ('class:prompt', ': ')
+        ]), default="", style=style)
+        
+    if args.prompt is "":
+        args.doc_type = prompt(FormattedText([
+            ('class:prompt', 'Enter the type of documentation to generate '),
+            ('class:default', '(default: documentation | diagram | database | mobile)'),
+            ('class:prompt', ': ')
+        ]), default="documentation", style=style)
+        args.doc_type = args.doc_type.lower().strip()
+        
+    if args.llm is None:
+        args.llm = prompt(FormattedText([
+            ('class:prompt', 'Enter the language model API to use '),
+            ('class:default', '(default: anthropic)'),
+            ('class:prompt', ': ')
+        ]), default="", style=style)
+    if args.llm == "":
+        args.llm = "anthropic"
 
     main(args.dir_path, args.output_file, args.prompt, args.doc_type, args.llm, args.ignore_dirs)
 
