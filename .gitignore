@@ -1,7 +1,3 @@
 *.pyc
-env
-workspace
-input
-output
-.env
 dist
+.env

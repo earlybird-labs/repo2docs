@@ -11,7 +11,7 @@ from repo2docs.repo_to_text import RepoProcessor
 from repo2docs.text_to_docs import TextToDocs
 from repo2docs.llm import client_models
 
-from repo2docs import __version__  # Ensure __version__ is imported from the module where it's defined
+from repo2docs import __version__
 
 
 def main(
