@@ -1,11 +1,15 @@
+import os
 import sys
 import requests
 import zipfile
 import io
-import ast
 
-# import tkinter as tk
-# from tkinter import filedialog, simpledialog
+
+import ast
+import esprima
+from pycparser import c_parser, c_ast
+
+from pprint import pprint
 
 
 class RepoProcessor:
@@ -30,13 +34,43 @@ class RepoProcessor:
 
     def process_repo(self) -> str:
         """Process files from the repository."""
-        processed_text = ""
-        if self.repo_path.endswith(".zip"):
-            processed_text = self._process_zip()
+        if self.repo_path.startswith("http"):
+            return self._process_url()
+        elif self.repo_path.endswith(".zip"):
+            return self._process_zip()
         else:
-            processed_text = self._process_url()
+            return self._process_directory()
 
-        return processed_text
+    def _process_directory(self) -> str:
+        """Process files from a directory and return the processed text."""
+        processed_texts = []
+
+        for root, dirs, files in os.walk(self.repo_path):
+            dirs[:] = [d for d in dirs if d not in self.ignore_dirs]
+            for file in files:
+                file_path = os.path.join(root, file)
+                if self._is_valid_file(file_path):
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        file_content = f.read()
+                    comment_syntax = self._get_comment_syntax(file_path)
+                    relative_file_path = os.path.relpath(file_path, self.repo_path)
+                    processed_texts.append(
+                        f"{comment_syntax} File: {relative_file_path}\n"
+                    )
+                    cleaned_content = self._clean_file_content(file_path, file_content)
+                    processed_texts.append(cleaned_content)
+                    processed_texts.append("\n\n")
+
+        return "".join(processed_texts)
+
+    def _process_url(self) -> str:
+        """Process files from a GitHub repository URL and return the processed text."""
+        if "/tree/" in self.repo_path:
+            self.repo_path = f"https://download-directory.github.io/?{self.repo_path}"
+
+        response = requests.get(f"{self.repo_path}/archive/master.zip")
+        zip_file = zipfile.ZipFile(io.BytesIO(response.content))
+        return self._process_files(zip_file)
 
     def _process_zip(self) -> str:
         """Process files from a downloaded GitHub repository zip file and return the processed text."""
@@ -54,18 +88,9 @@ class RepoProcessor:
             )
             sys.exit(1)
 
-    def _process_url(self) -> str:
-        """Process files from a GitHub repository URL and return the processed text."""
-        if "/tree/" in self.repo_path:
-            self.repo_path = f"https://download-directory.github.io/?{self.repo_path}"
-
-        response = requests.get(f"{self.repo_path}/archive/master.zip")
-        zip_file = zipfile.ZipFile(io.BytesIO(response.content))
-        return self._process_files(zip_file)
-
     def _process_files(self, zip_file: zipfile.ZipFile) -> str:
         """Process files from the zip file and return the processed text."""
-        processed_texts = []  # Use a list to accumulate processed texts
+        processed_texts = []
         for file_path in zip_file.namelist():
             if self._is_valid_file(file_path):
                 file_content = zip_file.read(file_path).decode("utf-8")
@@ -75,17 +100,115 @@ class RepoProcessor:
                     self._clean_file_content(file_path, file_content)
                 )
                 processed_texts.append("\n\n")
-        return "".join(
-            processed_texts
-        )  # Return the accumulated text as a single string
+        return "".join(processed_texts)
+
+    def _get_comment_syntax(self, file_path: str) -> str:
+        """Get the comment syntax based on the file extension."""
+        _, ext = os.path.splitext(file_path)
+        if ext in [".py"]:
+            return "#"
+        elif ext in [".js", ".jsx", ".ts", ".tsx", ".c", ".cpp", ".h", ".hpp"]:
+            return "//"
+        else:
+            return ""
+
+    def _clean_file_content(self, file_path: str, file_content: str) -> str:
+        """Clean the file content by removing unnecessary parts."""
+        _, ext = os.path.splitext(file_path)
+        if ext == ".py":
+            return self._clean_python_file(file_content)
+        elif ext in [".js", ".jsx", ".ts", ".tsx"]:
+            return self._clean_javascript_file(file_content)
+        elif ext in [".c", ".cpp", ".h", ".hpp"]:
+            return self._clean_c_cpp_file(file_content)
+        else:
+            return file_content
+
+    def _clean_python_file(self, file_content: str) -> str:
+        """Clean the Python file content by removing unnecessary parts."""
+        tree = ast.parse(file_content)
+        cleaned_lines = []
+
+        for node in ast.walk(tree):
+            if isinstance(
+                node,
+                (ast.Import, ast.ImportFrom, ast.ClassDef, ast.FunctionDef, ast.Assign),
+            ):
+                cleaned_lines.append(ast.unparse(node))
+
+        return "\n".join(cleaned_lines)
+
+    def _clean_javascript_file(self, file_content: str) -> str:
+        """Clean the JavaScript/TypeScript file content by removing unnecessary parts."""
+        try:
+            tree = esprima.parseScript(file_content, loc=True)
+            cleaned_lines = []
+
+            for node in tree.body:
+                if isinstance(
+                    node,
+                    (
+                        esprima.nodes.FunctionDeclaration,
+                        esprima.nodes.ClassDeclaration,
+                        esprima.nodes.VariableDeclaration,
+                    ),
+                ):
+                    start_line = node.loc.start.line - 1
+                    end_line = node.loc.end.line
+                    cleaned_lines.extend(file_content.split("\n")[start_line:end_line])
+
+            return "\n".join(cleaned_lines)
+        except esprima.error_handler.Error:
+            # If parsing fails, return the original file content
+            return file_content
+
+    def _clean_c_cpp_file(self, file_content: str) -> str:
+        """Clean the C/C++ file content by removing unnecessary parts."""
+        try:
+            parser = c_parser.CParser()
+            ast = parser.parse(file_content)
+            cleaned_lines = []
+
+            for node in ast:
+                if isinstance(
+                    node,
+                    (
+                        c_ast.FuncDef,
+                        c_ast.Struct,
+                        c_ast.Union,
+                        c_ast.Enum,
+                        c_ast.Typedef,
+                    ),
+                ):
+                    start_line = node.coord.line - 1
+                    end_line = self._find_end_line(node, file_content)
+                    cleaned_lines.extend(file_content.split("\n")[start_line:end_line])
+
+            return "\n".join(cleaned_lines)
+        except c_parser.ParseError:
+            # If parsing fails, return the original file content
+            return file_content
+
+    def _find_end_line(self, node, file_content: str) -> int:
+        """Find the end line number for a given node in the C/C++ file."""
+        lines = file_content.split("\n")
+        end_line = node.coord.line
+
+        for i in range(node.coord.line, len(lines)):
+            if lines[i].strip().endswith(";") or lines[i].strip().endswith("}"):
+                end_line = i + 1
+                break
+
+        return end_line
 
     def _is_valid_file(self, file_path: str) -> bool:
         """Check if the file is valid for processing."""
-        return (
+        is_valid = (
             not file_path.endswith("/")
             and any(file_path.endswith(ext) for ext in self.SUPPORTED_EXTENSIONS)
             and self._is_likely_useful_file(file_path)
         )
+        return is_valid
 
     def _is_likely_useful_file(self, file_path: str) -> bool:
         """Determine if the file is likely to be useful by excluding certain directories and specific file types."""
@@ -99,147 +222,29 @@ class RepoProcessor:
             "utils",
             "benchmarks",
             "node_modules",
+            "env",
+            "venv",
             ".venv",
-        ] + self.ignore_dirs
+        ]
         utility_or_config_files = ["hubconf.py", "setup.py", "package-lock.json"]
         github_workflow_or_docs = ["stale.py", "gen-card-", "write_model_card"]
 
+        relative_file_path = os.path.relpath(file_path, self.repo_path)
+
         return (
-            not any(part.startswith(".") for part in file_path.split("/"))
-            and "test" not in file_path.lower()
+            not any(
+                part.startswith(".") for part in relative_file_path.split(os.path.sep)
+            )
+            and "test" not in relative_file_path.lower()
             and not any(
-                f"/{excluded_dir}/" in file_path
-                or file_path.startswith(f"{excluded_dir}/")
+                os.path.sep + excluded_dir + os.path.sep in relative_file_path
+                or relative_file_path.startswith(excluded_dir + os.path.sep)
                 for excluded_dir in excluded_dirs
             )
-            and not any(file_name in file_path for file_name in utility_or_config_files)
-            and not any(doc_file in file_path for doc_file in github_workflow_or_docs)
+            and not any(
+                file_name in relative_file_path for file_name in utility_or_config_files
+            )
+            and not any(
+                doc_file in relative_file_path for doc_file in github_workflow_or_docs
+            )
         )
-
-    def _clean_file_content(self, file_path: str, file_content: str) -> str:
-        """Clean and prepare file content for output, using the correct commenting syntax."""
-        if file_path.endswith(".py"):
-            return self._remove_python_comments_and_docstrings(file_content)
-        elif file_path.endswith(
-            (".js", ".jsx", ".ts", ".tsx", ".c", ".cpp", ".h", ".hpp")
-        ):
-            return self._remove_js_ts_comments(file_content)
-        else:
-            return file_content
-
-    @staticmethod
-    def _remove_python_comments_and_docstrings(source: str) -> str:
-        """Remove comments and docstrings from Python source code."""
-        try:
-            tree = ast.parse(source)
-            for node in ast.walk(tree):
-                if isinstance(
-                    node, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)
-                ) and ast.get_docstring(node):
-                    node.body = node.body[1:]  # Remove docstring
-                elif isinstance(node, ast.Expr) and isinstance(node.value, ast.Str):
-                    node.value.s = ""  # Remove comments
-            return ast.unparse(tree)
-        except SyntaxError:
-            return source  # Return original source if there's a syntax error
-
-    @staticmethod
-    def _remove_js_ts_comments(source: str) -> str:
-        """Remove comments from JavaScript or TypeScript source code."""
-        lines = source.split("\n")
-        clean_lines = []
-        in_block_comment = False
-        for line in lines:
-            stripped_line = line.strip()
-            if stripped_line.startswith("/*"):
-                in_block_comment = True
-            if not in_block_comment and not stripped_line.startswith("//"):
-                clean_lines.append(line)
-            if stripped_line.endswith("*/"):
-                in_block_comment = False
-                continue  # Skip the line that ends the block comment
-        return "\n".join(clean_lines)
-
-    def _get_comment_syntax(self, file_path: str) -> str:
-        """Determine the correct comment syntax based on the file extension."""
-        if file_path.endswith((".py",)):
-            return "#"
-        elif file_path.endswith(
-            (".js", ".jsx", ".ts", ".tsx", ".c", ".cpp", ".h", ".hpp")
-        ):
-            return "//"
-        else:
-            return "#"  # Default to Python comment syntax as a fallback
-
-    # def gui_process_repo(self):
-    #     """Process repository using a GUI to select files."""
-    #     root = tk.Tk()
-    #     root.withdraw()  # We don't want a full GUI, so keep the root window from appearing
-
-    #     # Show an "Open" dialog box and return the path to the selected file
-    #     self.repo_path = filedialog.askopenfilename(
-    #         title="Select repository ZIP file",
-    #         filetypes=(("ZIP files", "*.zip"), ("All files", "*.*"))
-    #     )
-    #     if not self.repo_path:
-    #         print("No file selected. Exiting.")
-    #         sys.exit(0)
-
-    #     self.output_file = filedialog.asksaveasfilename(
-    #         title="Save output file as...",
-    #         defaultextension=".txt",
-    #         filetypes=(("Text files", "*.txt"), ("All files", "*.*"))
-    #     )
-    #     if not self.output_file:
-    #         print("No output file specified. Exiting.")
-    #         sys.exit(0)
-
-    #     self.process_repo()
-    #     print(f"Repository content has been successfully saved to {self.output_file}.")
-
-
-if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(
-        description="Process a GitHub repository and output its content to a text file."
-    )
-    parser.add_argument(
-        "repo_path",
-        nargs="?",
-        default=None,
-        help="The path to the GitHub repository zip file or URL.",
-    )
-    parser.add_argument(
-        "output_file",
-        nargs="?",
-        default=None,
-        help="The output file path where the repository content will be saved.",
-    )
-    parser.add_argument(
-        "--gui", action="store_true", help="Enable GUI mode for file selection."
-    )
-    parser.add_argument(
-        "--format",
-        choices=["txt", "md"],
-        default="txt",
-        help="Specify the output file format (txt or md).",
-    )
-
-    args = parser.parse_args()
-
-    output_extension = ".md" if args.format == "md" else ".txt"
-    if args.output_file and not args.output_file.endswith(output_extension):
-        args.output_file += output_extension
-
-    if args.gui:
-        processor = RepoProcessor(
-            None, None
-        )  # Initialize with None since we'll set these via GUI
-        processor.gui_process_repo()
-    else:
-        if not args.repo_path or not args.output_file:
-            parser.print_help()
-            sys.exit(1)
-        processor = RepoProcessor(args.repo_path, args.output_file)
-        processor.process_repo()

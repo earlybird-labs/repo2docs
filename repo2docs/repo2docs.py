@@ -23,21 +23,8 @@ def main(
     model: str = None,
     ignore_dirs: list = [],
 ):
-    # Create a temporary zip file from the specified directory
-    repo_zip_path = os.path.join(os.getcwd(), "repository.zip")
-    if not os.path.exists(repo_zip_path):
-        with zipfile.ZipFile(repo_zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-            for root, dirs, files in os.walk(dir_path):
-                for file in files:
-                    zipf.write(
-                        os.path.join(root, file),
-                        os.path.relpath(
-                            os.path.join(root, file), os.path.join(dir_path, "..")
-                        ),
-                    )
 
-    # Process the .zip file to get repository text
-    repo_processor = RepoProcessor(repo_zip_path, None, ignore_dirs)
+    repo_processor = RepoProcessor(dir_path, None, ignore_dirs)
     repo_text = repo_processor.process_repo()
 
     logging.info(f"Repository text has been successfully processed.")
