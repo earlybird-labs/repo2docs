@@ -1,44 +1,31 @@
 from abc import ABC, abstractmethod
-import os
 import openai
 import anthropic
-import sys
-import getpass
+
+from repo2docs.utils import get_api_key
 
 client_models = {
     "openai": ["gpt-4-turbo", "gpt-3.5-turbo"],
-    "anthropic": ["claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-opus-20240229"],
+    "anthropic": [
+        "claude-3-haiku-20240307",
+        "claude-3-sonnet-20240229",
+        "claude-3-opus-20240229",
+    ],
 }
 
-class LLMClient(ABC):
-    """
-    Abstract base class for LLM clients.
-    """
 
+class LLMClient(ABC):
     @abstractmethod
     def generate_response(self, prompt, model, max_tokens, temperature, messages):
         pass
 
-    @staticmethod
-    def get_api_key(env_var, client_name):
-        """
-        Retrieve API key from environment or prompt user if not found, specifying the client.
-        """
-        api_key = os.getenv(env_var)
-        if not api_key:
-            print(f"\nAPI key for {client_name} ({env_var}) not found. Please enter your API key (contents will be hidden):")
-            api_key = getpass.getpass(prompt='')
-        return api_key
 
 class OpenAIClient(LLMClient):
     def __init__(self, api_key: str = None, model: str = None):
         if not api_key:
-            api_key = self.get_api_key('OPENAI_API_KEY', 'OpenAI')
-        if model is None:
-            model = 'gpt-4-turbo'
-        self.model = model
+            api_key = get_api_key("OPENAI_API_KEY", "OpenAI")
+        self.model = model or "gpt-4-turbo"
         self.client = openai.OpenAI(api_key=api_key)
-        
 
     def generate_response(
         self,
@@ -59,10 +46,8 @@ class OpenAIClient(LLMClient):
 class AnthropicClient(LLMClient):
     def __init__(self, api_key: str = None, model: str = None):
         if not api_key:
-            api_key = self.get_api_key('ANTHROPIC_API_KEY', 'Anthropic')
-        if model is None:
-            model = 'claude-3-haiku-20240307'
-        self.model = model
+            api_key = self.get_api_key("ANTHROPIC_API_KEY", "Anthropic")
+        self.model = model or "claude-3-haiku-20240307"
         self.client = anthropic.Anthropic(api_key=api_key)
 
     def generate_response(
