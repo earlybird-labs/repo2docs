@@ -36,10 +36,10 @@ To run Repo2Docs on your local machine, follow these steps:
 
 
 2. **Set Up Environment Variables**:
-   Create a `.env` file in the root directory and add your language model API keys:
+   Export your OpenAI and Anthropic API keys as environment variables:
    ```
-   OPENAI_API_KEY=your_openai_api_key_here
-   ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   export OPENAI_API_KEY=your_openai_api_key_here
+   export ANTHROPIC_API_KEY=your_anthropic_api_key_here
    ```
 
 3. **Run the Tool**:
