@@ -9,6 +9,7 @@ from InquirerPy.utils import get_style
 
 from repo2docs.repo_to_text import RepoProcessor
 from repo2docs.text_to_docs import TextToDocs
+from repo2docs.llm import client_models
 
 from repo2docs import __version__  # Ensure __version__ is imported from the module where it's defined
 
@@ -19,6 +20,7 @@ def main(
     prompt: str = None,
     doc_type: str = "documentation",
     llm: str = "anthropic",
+    model: str = None,
     ignore_dirs: list = [],
 ):
     # Create a temporary zip file from the specified directory
@@ -36,11 +38,6 @@ def main(
     repo_text = repo_processor.process_repo()
 
     logging.info(f"Repository text has been successfully processed.")
-    
-    if ":" in llm:
-        llm, model = llm.split(":")
-    else:
-        model = None
     
     # Convert the repository text to documentation
     text_to_docs = TextToDocs(llm, model)
@@ -90,7 +87,7 @@ def run():
     parser.add_argument(
         "--type",
         dest="doc_type",
-        choices=["documentation", "diagram", "database", "mobile"],
+        choices=["documentation", "diagram", "database"],
         default=None,
         help="Specify the type of documentation to generate.",
     )
@@ -99,6 +96,13 @@ def run():
         default=None,
         help="Specify the language model API to use for generating documentation.",
     )
+    
+    parser.add_argument(
+        "--model",
+        default=None,
+        help="Specify the model to use for generating documentation.",
+    )
+    
     parser.add_argument(
         "--ignore_dirs", nargs="*", default=[], help="List of directories to ignore."
     )
@@ -150,8 +154,8 @@ def run():
     if args.output_file is None:
         args.output_file = inquirer.select(
             message="Select the output file path:",
-            choices=["Default (output.md)", "Enter file path"],
-            default="Default (output.md)",
+            choices=["Default (README.md)", "Enter file path"],
+            default="Default (README.md)",
             style=style
         ).execute()
         if args.output_file == "Enter file path":
@@ -160,15 +164,15 @@ def run():
                 default="",
                 style=style
             ).execute()
-            if args.output_file.split(".")[-1] != "md":
+            if ".md" not in args.output_file:
                 args.output_file += ".md"
         else:
-            args.output_file = "output.md"
+            args.output_file = "README.md"
 
     if args.prompt is None and args.doc_type is None:
         args.prompt = inquirer.select(
             message="Choose from preset prompts or enter a custom prompt:",
-            choices=["documentation", "diagram", "database", "mobile", "Enter custom prompt"],
+            choices=["documentation", "diagram", "database", "Enter custom prompt"],
             default="documentation",
             style=style
         ).execute()
@@ -189,5 +193,21 @@ def run():
             default="anthropic",
             style=style
         ).execute()
+        
+    if args.llm == "anthropic":
+        args.model = inquirer.select(
+            message="Select the model to use:",
+            choices=client_models["anthropic"],
+            default="claude-3-haiku-20240307",
+            style=style
+        ).execute()
+    elif args.llm == "openai":
+        args.model = inquirer.select(
+            message="Select the model to use:",
+            choices=client_models["openai"],
+            default="gpt-4-turbo",
+            style=style
+        ).execute()
 
-    main(args.dir_path, args.output_file, args.prompt, args.doc_type, args.llm, args.ignore_dirs)
+    main(args.dir_path, args.output_file, args.prompt, args.doc_type, args.llm, args.model, args.ignore_dirs)
+

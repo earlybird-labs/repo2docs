@@ -5,6 +5,11 @@ import anthropic
 import sys
 import getpass
 
+client_models = {
+    "openai": ["gpt-4-turbo", "gpt-3.5-turbo"],
+    "anthropic": ["claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-opus-20240229"],
+}
+
 class LLMClient(ABC):
     """
     Abstract base class for LLM clients.
@@ -21,7 +26,7 @@ class LLMClient(ABC):
         """
         api_key = os.getenv(env_var)
         if not api_key:
-            print(f"API key for {client_name} ({env_var}) not found. Please enter your API key (contents will be hidden):")
+            print(f"\nAPI key for {client_name} ({env_var}) not found. Please enter your API key (contents will be hidden):")
             api_key = getpass.getpass(prompt='')
         return api_key
 

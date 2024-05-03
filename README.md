@@ -26,33 +26,30 @@ To run Repo2Docs on your local machine, follow these steps:
 
 3. **Run the Tool**:
 
-   cd into the directory where the repo is located
+   Navigate to the directory containing the repository:
    ```
    cd <path_to_repo>
    ```
-   Run the main command for an interactive prompt
+   To start Repo2Docs with an interactive prompt, execute:
    ```
    repo2docs
    ```
-   or, run the main command with the following flags
+   Alternatively, you can specify options directly via command-line flags:
    ```
-   repo2docs --dir_path <path_to_repo> --output_file <output_file> --type <type> --llm <llm>
+   repo2docs --dir_path . --output_file README.md --type documentation --llm openai
    ```
 
-   - Leaving `dir_path` empty will default to the current directory.
-   - Leaving `output_file` empty will default to `output.md`.
-   - Leaving `type` empty will default to `documentation`.
-     - To generate mobile documentation, use `--type mobile`.
-     - To generate diagrams instead of documentation, use `--type diagram`.
-     - To generate database erd diagrams, use `--type database`.
-     - To use a custom prompt,leave `type` empty and use `--prompt "<prompt>"`.
-   - Leaving `llm` empty will default to `openai`.
-     - To use Anthropic, use `--llm anthropic`.
-       - Defaults to `claude-3-haiku-20240307`.
-       - To use a specific model, use `--llm anthropic:<model>`.
-     - To use OpenAI, use `--llm openai`.
-       - Defaults to `gpt-4-turbo`.
-       - To use a specific model, use `--llm openai:<model>`.
+   - `dir_path`: Specifies the directory of the repo. If omitted, defaults to the current directory.
+   - `output_file`: Sets the name and path of the output file. If omitted, defaults to `README.md`.
+   - `type`: Determines the type of output generated. Options include:
+     - `documentation` (default)
+     - `diagram` for visual diagrams
+     - `database` for database ERD diagrams
+     - Custom prompt: Leave `type` unspecified and use `--prompt "<prompt>"` to provide a custom prompt.
+   - `llm`: Selects the language model to use. If omitted, defaults to `openai`. Options include:
+     - `openai` (default model: `gpt-4-turbo`)
+     - `anthropic` (default model: `claude-3-haiku-20240307`)
+   - `model`: Specifies the model to use for generating documentation. If omitted, defaults to the default model for the selected language model.
 
 ## Supported File Types
 

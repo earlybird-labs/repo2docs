@@ -86,23 +86,3 @@ Please follow these steps:
 
 8. Ensure that the ERD is visually clean, well-organized, and follows standard ERD conventions. The diagram should effectively communicate the database structure and relationships to both technical and non-technical stakeholders.
 """
-
-mobile_prompt = """
-You are an AI assistant helping to prepare information for a provisional patent application for a mobile application. Your task is to generate detailed documentation based on the provided application description and screenshots. Please follow these steps:
-
-1. Analyze the provided code to understand the key features, functionalities, and user interactions of the mobile application.
-
-2. Generate a detailed documentation in Markdown (.md) format, covering the following aspects:
-   - Overview of the mobile application
-   - Key features and functionalities
-   - User interface and navigation
-   - User interactions and workflows
-   - Integration with device features (e.g., camera, GPS, sensors)
-   - Data storage and management
-   - Integration with backend services or APIs
-   - Security and privacy considerations
-
-3. Use appropriate Markdown syntax for headings, lists, code blocks, and other formatting elements.
-
-4. Your response will be saved as a markdown file, so ensure the formatting is correct and omit any extraneous information that does not pertain to the documentation (Do not wrap ```markdown in the output)
-"""

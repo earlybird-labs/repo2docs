@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from repo2docs.llm import OpenAIClient, AnthropicClient, LLMClient
-from repo2docs.prompts import documentation_prompt, diagram_prompt, mobile_prompt, database_prompt
+from repo2docs.prompts import documentation_prompt, diagram_prompt, database_prompt
 
 load_dotenv()
 
@@ -25,7 +25,6 @@ class TextToDocs:
         prompt_map = {
             "documentation": documentation_prompt,
             "diagram": diagram_prompt,
-            "mobile": mobile_prompt,
             "database": database_prompt
         }
         
