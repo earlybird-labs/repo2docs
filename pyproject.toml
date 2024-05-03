@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "repo2docs"
-version = "0.1.0"
+version = "0.1.1"
 description = "Documentation from your codebase using LLMs"
 authors = ["Joe Petrantoni <79169021+jpetrantoni@users.noreply.github.com>"]
 license = "MIT"
