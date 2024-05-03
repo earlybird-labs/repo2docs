@@ -134,8 +134,11 @@ def run():
             ('class:prompt', 'Enter the type of documentation to generate '),
             ('class:default', '(default: documentation | diagram | database | mobile)'),
             ('class:prompt', ': ')
-        ]), default="documentation", style=style)
+        ]), default="", style=style)
+        if args.doc_type == "":
+            args.doc_type = "documentation"
         args.doc_type = args.doc_type.lower().strip()
+    
         
     if args.llm is None:
         args.llm = prompt(FormattedText([
