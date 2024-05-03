@@ -12,6 +12,9 @@ from prompt_toolkit.shortcuts import radiolist_dialog
 from repo2docs.repo_to_text import RepoProcessor
 from repo2docs.text_to_docs import TextToDocs
 
+from repo2docs import __version__  # Ensure __version__ is imported from the module where it's defined
+
+
 def main(
     dir_path: str = '.',
     output_file: str = "output.md",
@@ -63,7 +66,13 @@ def run():
     parser = argparse.ArgumentParser(
         description="Convert a directory into documentation."
     )
-
+    
+    parser.add_argument(
+        "-v", "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+        help="Show the version number and exit."
+    )
     
     parser.add_argument(
         "--dir_path",
