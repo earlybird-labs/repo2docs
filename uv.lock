@@ -764,7 +764,7 @@ wheels = [
 ]
 
 [[package]]
-name = "repo2docs"
+name = "repo2text"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

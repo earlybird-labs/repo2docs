@@ -1,9 +1,9 @@
 [project]
-name = "repo2docs"
+name = "repo2text"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
     "openai>=1.25.1",
     "anthropic>=0.26.0",
@@ -14,3 +14,9 @@ dependencies = [
     "esprima>=4.0.1",
     "pycparser>=2.22"
 ]
+
+[project.scripts]
+repo2text = "repo2text.repo2text:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["repo2text"]
