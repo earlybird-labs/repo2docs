@@ -1,16 +1,21 @@
+# Standard library imports
+import argparse
+import io
+import logging
 import os
 import sys
-import requests
+from typing import List
 import zipfile
-import io
 
+# Third party imports
 import ast
 import esprima
+import requests
 from pycparser import c_parser, c_ast
 
 
 class RepoProcessor:
-    """A class to process files from a GitHub repository."""
+    """A class to process files from a repository."""
 
     SUPPORTED_EXTENSIONS = [
         ".py",
@@ -39,7 +44,7 @@ class RepoProcessor:
             return self._process_directory()
 
     def _process_directory(self) -> str:
-        """Process files from a directory and return the processed text."""
+        """Process files from a directory and returns the processed text."""
         processed_texts = []
 
         for root, dirs, files in os.walk(self.repo_path):
@@ -277,3 +282,101 @@ class RepoProcessor:
                 doc_file in relative_file_path for doc_file in github_workflow_or_docs
             )
         )
+
+
+
+
+def get_file_language(file_path: str) -> str:
+    """Get the language name based on file extension for markdown code blocks."""
+    ext_to_lang = {
+        '.py': 'python',
+        '.js': 'javascript',
+        '.jsx': 'jsx',
+        '.ts': 'typescript',
+        '.tsx': 'tsx',
+        '.c': 'c',
+        '.cpp': 'cpp',
+        '.h': 'c',
+        '.hpp': 'cpp'
+    }
+    _, ext = os.path.splitext(file_path)
+    return ext_to_lang.get(ext, '')
+
+def process_files_to_markdown(dir_path: str, output_file: str, ignore_dirs: List[str] = None) -> None:
+    """Process repository files and convert them to markdown format."""
+    if ignore_dirs is None:
+        ignore_dirs = []
+
+    repo_processor = RepoProcessor(dir_path, None, ignore_dirs)
+    
+    # Create markdown content
+    markdown_content = []
+    
+    for root, dirs, files in os.walk(dir_path):
+        dirs[:] = [d for d in dirs if d not in ignore_dirs]
+        for file in files:
+            file_path = os.path.join(root, file)
+            if repo_processor._is_valid_file(file_path):
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        file_content = f.read()
+                    
+                    relative_path = os.path.relpath(file_path, dir_path)
+                    language = get_file_language(file_path)
+                    
+                    # Add file header and code block to markdown
+                    markdown_content.append(f"## {relative_path}\n")
+                    markdown_content.append(f"```{language}")
+                    markdown_content.append(file_content)
+                    markdown_content.append("```\n\n")
+                except Exception as e:
+                    logging.warning(f"Error processing file {file_path}: {str(e)}")
+    
+    # Ensure output directory exists
+    output_dir = os.path.dirname(output_file)
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    
+    # Write markdown content to file
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(markdown_content))
+    
+    logging.info(f"Successfully converted repository to markdown at {output_file}")
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Convert a repository's code files to a formatted markdown file."
+    )
+    
+    parser.add_argument(
+        'dir_path',
+        help='The directory path to process',
+        nargs='?',
+        default='.'
+    )
+    
+    parser.add_argument(
+        '--output',
+        '-o',
+        help='The output markdown file path',
+        default='repo_docs.md'
+    )
+    
+    parser.add_argument(
+        '--ignore',
+        nargs='*',
+        help='List of directories to ignore',
+        default=[]
+    )
+    
+    args = parser.parse_args()
+    
+    try:
+        process_files_to_markdown(args.dir_path, args.output, args.ignore)
+    except Exception as e:
+        logging.error(f"Error processing repository: {str(e)}")
+        sys.exit(1)
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+    main()

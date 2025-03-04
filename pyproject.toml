@@ -1,27 +1,16 @@
-[tool.poetry]
+[project]
 name = "repo2docs"
-version = "0.1.23"
-description = "Documentation from your codebase using LLMs"
-authors = ["Joe Petrantoni <79169021+jpetrantoni@users.noreply.github.com>"]
-license = "MIT"
+version = "0.1.0"
+description = "Add your description here"
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.10"
-openai = "^1.25.1"
-anthropic = "^0.25.7"
-instructor = "^1.2.5"
-python-dotenv = "^1.0.1"
-prompt-toolkit = "^3.0.43"
-inquirerpy = "^0.3.4"
-esprima = "^4.0.1"
-pycparser = "^2.22"
-
-[tool.poetry.scripts]
-repo2docs = "repo2docs.repo2docs:run"
-
-
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires-python = ">=3.11"
+dependencies = [
+    "openai>=1.25.1",
+    "anthropic>=0.26.0",
+    "instructor>=1.2.5", 
+    "python-dotenv>=1.0.1",
+    "prompt-toolkit>=3.0.43",
+    "inquirerpy>=0.3.4",
+    "esprima>=4.0.1",
+    "pycparser>=2.22"
+]
